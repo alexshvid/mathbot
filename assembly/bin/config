@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+#JAVA_HOME=
+
+JAVA_OPTS="-server -Xss412k"
+JAVA_OPTS="$JAVA_OPTS -Xms512m -Xmx512m -XX:MaxPermSize=256m"
+#JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=9000,suspend=n,server=y"
+#JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.port=8000 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+
+# OS detection
+cygwin=false
+darwin=false
+os400=false
+case "`uname`" in
+CYGWIN*) cygwin=true;;
+Darwin*) darwin=true;;
+OS400*) os400=true;;
+esac
+
+if $cygwin; then
+  JAR_SEPARATOR=";"
+else
+  JAR_SEPARATOR=":"
+fi
+
+CLASSPATH='../conf'
+
+for f in ../lib/*.jar; do
+  CLASSPATH=${CLASSPATH}${JAR_SEPARATOR}$f;
+done
+
+if [ "$JAVA_HOME" == "" ]; then
+  JAVA=java
+else
+  JAVA=$JAVA_HOME/bin/java
+fi
+
+export CLASSPATH
+export JAVA
+export JAVA_OPTS
+
