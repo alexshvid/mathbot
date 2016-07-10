@@ -1,51 +1,50 @@
 package com.shvid.mathbot;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.PumpStreamHandler;
+
+/**
+ * MathBotApp
+ * 
+ * @author Alex Shvid
+ *
+ */
 
 public class MathBotApp {
+	
+	private final AppSettings appSettings = new AppSettings();
 
-	private final Process proc;
-	private final BufferedReader bufferedReader;
-
+	private final DefaultExecuteResultHandler resultHandler;
+	
 	public MathBotApp() throws Exception {
 
-		this.proc = Runtime.getRuntime().exec("/usr/local/octave/3.8.0/bin/octave");
+		resultHandler = new DefaultExecuteResultHandler();
+		ExecuteWatchdog watchdog  = new ExecuteWatchdog( ExecuteWatchdog.INFINITE_TIMEOUT );
+		Executor exec = new DefaultExecutor();
 
-		InputStream inputStream = proc.getInputStream();
-		this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+		PumpStreamHandler psh = new PumpStreamHandler(System.out, System.err, System.in);
 
-	}
+		exec.setStreamHandler( psh );
+		exec.setWatchdog( watchdog );
 
-	public String getOutput() throws Exception {
-
-		StringBuilder output = new StringBuilder();
+		CommandLine cl = CommandLine.parse(appSettings.getOctaveExec());
 		
-		while (bufferedReader.ready()) {
-			String line = bufferedReader.readLine();
-			if (line != null) {
-				output.append(line).append("\n");
-			}
-			else {
-				break;
-			}
-		}
+		exec.execute(cl, resultHandler );
 
-		return output.toString();
 	}
 
 	public void waitFor() throws Exception {
 
-		int exitValue = proc.waitFor();
-		if (exitValue != 0) {
-			System.err.println(proc.exitValue());
-		}
+		resultHandler.waitFor();
 
 	}
 	
 	public void close() {
-		proc.destroy();
+
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -53,10 +52,8 @@ public class MathBotApp {
 		System.out.println("MathBot");
 
 		MathBotApp bot = new MathBotApp();
-		
-		Thread.currentThread().sleep(1000);
-		
-		System.out.println(bot.getOutput());
+
+		bot.waitFor();
 		
 		bot.close();
 
