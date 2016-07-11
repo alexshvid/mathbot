@@ -40,7 +40,7 @@ public class MathWorkspace {
 		resultHandler = new DefaultExecuteResultHandler();
 		executor = new DefaultExecutor();
 
-		streamHandler = new ExtendedPumpStreamHandler(outputStream, System.err);
+		streamHandler = new ExtendedPumpStreamHandler(outputStream, outputStream);
 		
 		executor.setStreamHandler(streamHandler);
 		executor.setWatchdog(watchdog);
@@ -67,6 +67,10 @@ public class MathWorkspace {
 
 	}
 
+	public boolean isAlive() {
+		return !resultHandler.hasResult();
+	}
+	
 	public void close() {
 		try {
 	    streamHandler.stop();

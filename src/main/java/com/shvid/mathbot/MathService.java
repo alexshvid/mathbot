@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.bots.AbsSender;
 
 import com.google.common.cache.Cache;
@@ -36,7 +35,15 @@ public class MathService {
 	}
 	
 	public MathWorkspace findWorkspace(Long chatId) {
-		return workspaceMap.getIfPresent(chatId);
+		MathWorkspace workspace = workspaceMap.getIfPresent(chatId);
+		if (workspace != null) {
+			if (workspace.isAlive()) {
+				return workspace;
+			}
+			workspaceMap.invalidate(chatId);
+			workspace.close();
+		}
+		return null;
 	}
 	
 	public MathWorkspace newWorkspace(AbsSender sender, Long chatId) {
