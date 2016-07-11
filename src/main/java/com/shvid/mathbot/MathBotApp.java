@@ -88,7 +88,7 @@ public class MathBotApp {
 	}
 
 	private static void commandLine(AppSettings appSettings) throws IOException {
-		MathWorkspace workspace = new MathWorkspace(appSettings, System.out);
+		MathWorkspace workspace = new MathWorkspace(appSettings.getOctaveExec(), System.out);
 
 		BufferedReader b = new BufferedReader(new InputStreamReader(System.in));
 

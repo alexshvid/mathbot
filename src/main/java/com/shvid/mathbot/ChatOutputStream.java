@@ -15,8 +15,6 @@ import org.telegram.telegrambots.logging.BotLogger;
 
 public final class ChatOutputStream extends LogOutputStream {
 
-	private static final String LAST_WELCOME_LINE = "For information about changes from previous versions, type 'news'.";
-	
 	private static final String LOGTAG = "CHATOUT";
 	
 	private final AbsSender sender;
@@ -37,7 +35,7 @@ public final class ChatOutputStream extends LogOutputStream {
 			return;
 		}
 		
-		if (LAST_WELCOME_LINE.equals(line)) {
+		if (MathConfig.LAST_WELCOME_LINE.equals(line)) {
 			welcomeDone = true;
 			return;
 		}

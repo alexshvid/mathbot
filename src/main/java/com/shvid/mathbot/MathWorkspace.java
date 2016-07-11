@@ -35,7 +35,7 @@ public class MathWorkspace {
 	private final DefaultExecutor executor;
 	private final ExtendedPumpStreamHandler streamHandler;
 	
-	public MathWorkspace(AppSettings appSettings, OutputStream outputStream) {
+	public MathWorkspace(String command, OutputStream outputStream) {
 
 		resultHandler = new DefaultExecuteResultHandler();
 		executor = new DefaultExecutor();
@@ -45,7 +45,7 @@ public class MathWorkspace {
 		executor.setStreamHandler(streamHandler);
 		executor.setWatchdog(watchdog);
 
-		CommandLine cl = CommandLine.parse(appSettings.getOctaveExec());
+		CommandLine cl = CommandLine.parse(command);
 
 		try {
 			executor.execute(cl, resultHandler);
@@ -56,7 +56,16 @@ public class MathWorkspace {
 		}
 
 	}
+	
 
+	public void waitFor() {
+		try {
+	    resultHandler.waitFor();
+    } catch (InterruptedException e) {
+			BotLogger.error(LOGTAG, e);
+    }
+	}
+	
 	public void send(String query) {
 
 		try {

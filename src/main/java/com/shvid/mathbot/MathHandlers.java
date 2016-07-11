@@ -1,8 +1,11 @@
 package com.shvid.mathbot;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -26,10 +29,12 @@ public class MathHandlers extends TelegramLongPollingBot {
 
 	private static final String LOGTAG = "MATHHANDLERS";
 
+	private final AppSettings appSettings;
 	private final String botToken;
 	private final MathService mathService;
 
 	public MathHandlers(AppSettings appSettings) {
+		this.appSettings = appSettings;
 		this.botToken = System.getenv(appSettings.getTokenVar());
 
 		if (this.botToken == null) {
@@ -49,7 +54,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 	public void onUpdateReceived(Update update) {
 		try {
 			if (update.hasInlineQuery()) {
-				handleIncomingInlineQuery(update.getInlineQuery());
+				processInlineQuery(update.getInlineQuery());
 			} else if (update.hasMessage() && update.getMessage().isUserMessage()) {
 				try {
 					processMessage(update.getMessage());
@@ -67,51 +72,81 @@ public class MathHandlers extends TelegramLongPollingBot {
 		return MathConfig.MATH_BOT_USER;
 	}
 
-	private void handleIncomingInlineQuery(InlineQuery inlineQuery) {
+	private void processInlineQuery(InlineQuery inlineQuery) {
 		String query = inlineQuery.getQuery();
 		BotLogger.debug(LOGTAG, "InlineQuery: " + query);
 		try {
-			if (!query.isEmpty()) {
-				List<String> outputResults = mathService.getResult(query);
-				answerInlineQuery(formatAnswer(inlineQuery, outputResults));
-			} else {
-				answerInlineQuery(formatAnswer(inlineQuery, new ArrayList<String>()));
+			if (query != null && !query.isEmpty()) {
+				runInlineQuery(inlineQuery);
 			}
-		} catch (TelegramApiException e) {
+		} catch (Exception e) {
 			BotLogger.error(LOGTAG, e);
 		}
 	}
 
-	private static AnswerInlineQuery formatAnswer(InlineQuery inlineQuery,
-	    List<String> outputResults) {
-		AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
-		answerInlineQuery.setInlineQueryId(inlineQuery.getId());
-		answerInlineQuery.setCacheTime(MathConfig.MATH_CACHE_TIME);
-		answerInlineQuery.setResults(convertResults(outputResults));
-		return answerInlineQuery;
-	}
+	private void runInlineQuery(InlineQuery inlineQuery) throws Exception {
 
-	private static List<InlineQueryResult> convertResults(
-	    List<String> outputResults) {
-		List<InlineQueryResult> results = new ArrayList<>();
+		String query = inlineQuery.getQuery();
+		
+		InlineWorkspace workspace = new InlineWorkspace(appSettings.getOctaveExec(), query + "\nexit\n");
 
-		int i = 1;
-		for (String outputResult : outputResults) {
-			InputTextMessageContent messageContent = new InputTextMessageContent();
-			messageContent.disableWebPagePreview();
-			messageContent.enableMarkdown(true);
-			messageContent.setMessageText(outputResult);
-			InlineQueryResultArticle article = new InlineQueryResultArticle();
-			article.setInputMessageContent(messageContent);
-			article.setId(Integer.toString(i++));
-			article.setTitle("title");
-			article.setDescription("description");
-			results.add(article);
+		byte[] out = workspace.waitFor();
+		
+		List<String> resultList = IOUtils.readLines(new ByteArrayInputStream(out), StandardCharsets.UTF_8);
+		
+		String result = convertResults(resultList);
+		
+		if (result.indexOf("parse error") != -1 ||
+				result.indexOf("syntax error") != -1) {
+			return;
 		}
-
-		return results;
+		
+    AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
+    answerInlineQuery.setInlineQueryId(inlineQuery.getId());
+    answerInlineQuery.setCacheTime(MathConfig.MATH_CACHE_TIME);
+    
+    InputTextMessageContent messageContent = new InputTextMessageContent();
+    messageContent.disableWebPagePreview();
+    messageContent.enableMarkdown(true);
+    messageContent.setMessageText(result);
+    
+    InlineQueryResultArticle article = new InlineQueryResultArticle();
+    article.setId(inlineQuery.getId());
+    article.setTitle(MathConfig.INLINE_TITLE);
+    article.setInputMessageContent(messageContent);
+    
+    List<InlineQueryResult> articles = new ArrayList<>(1);
+    articles.add(article);
+    
+    answerInlineQuery.setResults(articles);
+    answerInlineQuery(answerInlineQuery);
+    
 	}
 
+
+	private String convertResults(List<String> resultList) {
+		StringBuilder str = new StringBuilder(); 
+		
+		boolean welcomeDone = false;
+		for (String line : resultList) {
+			
+			if (line == null || line.length() == 0) {
+				continue;
+			}
+			
+			if (MathConfig.LAST_WELCOME_LINE.equals(line)) {
+				welcomeDone = true;
+				continue;
+			}
+			
+			if (welcomeDone) {
+				str.append(line).append("\n");
+			}
+		}
+		
+		return str.toString();
+	}
+	
 	private void processMessage(Message message) throws TelegramApiException {
 
 		Long chatId = message.getChatId();

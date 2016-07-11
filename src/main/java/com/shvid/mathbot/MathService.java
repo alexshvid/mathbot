@@ -26,9 +26,12 @@ public class MathService {
 	 * key is chat id
 	 */
 
-	private final Cache<Long, MathWorkspace> workspaceMap = CacheBuilder.newBuilder()
-	    .maximumSize(1000).expireAfterAccess(20, TimeUnit.MINUTES)
-	    .removalListener(MathWorkspace.RemovalListenerImpl.INSTANCE).build();
+	private final Cache<Long, MathWorkspace> workspaceMap = CacheBuilder
+			.newBuilder()
+	    .maximumSize(1000)
+	    .expireAfterAccess(20, TimeUnit.MINUTES)
+	    .removalListener(MathWorkspace.RemovalListenerImpl.INSTANCE)
+	    .build();
 
 	public MathService(AppSettings appSettings) {
 		this.appSettings = appSettings;
@@ -50,7 +53,7 @@ public class MathService {
 		
 		ChatOutputStream outputStream = new ChatOutputStream(sender, chatId);
 		
-		MathWorkspace workspace = new MathWorkspace(appSettings, outputStream);
+		MathWorkspace workspace = new MathWorkspace(appSettings.getOctaveExec(), outputStream);
 		workspaceMap.put(chatId, workspace);
 		return workspace;
 	}
