@@ -1,11 +1,10 @@
 package com.shvid.mathbot;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.io.PrintStream;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
@@ -36,7 +35,7 @@ public class MathWorkspace {
 	private final DefaultExecutor executor;
 	private final ExtendedPumpStreamHandler streamHandler;
 	
-	public MathWorkspace(AppSettings appSettings, ChatOutputStream outputStream) {
+	public MathWorkspace(AppSettings appSettings, OutputStream outputStream) {
 
 		resultHandler = new DefaultExecuteResultHandler();
 		executor = new DefaultExecutor();
@@ -56,47 +55,19 @@ public class MathWorkspace {
 			BotLogger.error(LOGTAG, e);
 		}
 
-		System.out.println("resultHandler.hasResult " + resultHandler.hasResult());
-
 	}
 
 	public void send(String query) {
 
-		System.out.println("send query = '" + query + "'");
-		
-		System.out.println("watchdog.isWatching " + watchdog.isWatching());
-		System.out.println("watchdog.killedProcess " + watchdog.killedProcess());
-		
-		System.out.println("resultHandler.hasResult " + resultHandler.hasResult());
-
-		
 		try {
 	    streamHandler.writeLine(query);
     } catch (IOException e) {
     	BotLogger.error(LOGTAG, e);
     }
-		
-		/**
-		try {
-	    out.write(queryWithLn.getBytes(StandardCharsets.UTF_8));
-    } catch (IOException e) {
-    	BotLogger.error(LOGTAG, e);
-    }
-    **/
-		
-		/*
-		try {
-			executor.writeLine(query);
-		} catch (IOException e) {
-			BotLogger.error(LOGTAG, e);
-		} catch (IllegalStateException e) {
-			BotLogger.error(LOGTAG, e);
-		}
-		*/
+
 	}
 
 	public void close() {
-		System.out.println("Close workspace " + this);
 		try {
 	    streamHandler.stop();
     } catch (IOException e) {
@@ -117,54 +88,32 @@ public class MathWorkspace {
 
 	}
 
-	public static final class DirectExecutor extends DefaultExecutor {
 
-		private Process process;
-		private OutputStream processOutput;
-
-		@Override
-		protected Process launch(CommandLine command, Map<String, String> env, File dir)
-		    throws IOException {
-			process = super.launch(command, env, dir);
-			processOutput = process.getOutputStream();
-			return process;
-		}
-
-		public void writeLine(String line) throws IOException {
-
-			if (processOutput == null) {
-				throw new IllegalStateException("empty processOutput");
-			}
-			
-			String lineWithLn = line + "\n";
-			processOutput.write(lineWithLn.getBytes(StandardCharsets.UTF_8));
-		}
-
-	}
 
 	public static class ExtendedPumpStreamHandler extends PumpStreamHandler {
 
-		private OutputStream processOutput;
-		
+		private PrintStream printStream;
+
     public ExtendedPumpStreamHandler(final OutputStream out, final OutputStream err) {
     	super(out, err);
+    }
+    
+    public ExtendedPumpStreamHandler(final OutputStream out, final OutputStream err, final InputStream in) {
+    	super(out, err, in);
     }
 
 		
 		@Override
     public void setProcessInputStream(OutputStream os) {
-			this.processOutput = os;
+			this.printStream = new PrintStream(new BufferedOutputStream(os));
     }
 		
 		public void writeLine(String line) throws IOException {
-			
-			if (processOutput == null) {
-				throw new IllegalStateException("empty processOutput");
+			if (printStream == null) {
+				throw new IllegalStateException("empty printStream");
 			}
-			
-			String lineWithLn = line + "\n";
-			processOutput.write(lineWithLn.getBytes(StandardCharsets.UTF_8));
-			
+			printStream.println(line);
+			printStream.flush();
 		}
 		
 	}

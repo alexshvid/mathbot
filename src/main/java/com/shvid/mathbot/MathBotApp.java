@@ -1,6 +1,8 @@
 package com.shvid.mathbot;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
@@ -25,7 +27,7 @@ import org.telegram.telegrambots.logging.BotsFileHandler;
 public class MathBotApp {
 
 	private static final String LOGTAG = "MAIN";
-	
+
 	private final AppSettings appSettings = new AppSettings();
 
 	private final DefaultExecuteResultHandler resultHandler;
@@ -61,10 +63,12 @@ public class MathBotApp {
 
 	public static void main(String[] args) throws Exception {
 
-    registerLogs();
-    
+		registerLogs();
+
 		AppSettings appSettings = new AppSettings();
-		
+
+		// commandLine(appSettings);
+
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
 
 		try {
@@ -75,22 +79,46 @@ public class MathBotApp {
 
 		System.out.println("MathBot started");
 
-		//MathBotApp bot = new MathBotApp();
+		// MathBotApp bot = new MathBotApp();
 
-		//bot.waitFor();
+		// bot.waitFor();
 
-		//bot.close();
+		// bot.close();
 
 	}
 
+	private static void commandLine(AppSettings appSettings) throws IOException {
+		MathWorkspace workspace = new MathWorkspace(appSettings, System.out);
+
+		BufferedReader b = new BufferedReader(new InputStreamReader(System.in));
+
+		while (true) {
+
+			String line = b.readLine();
+			if (line == null) {
+				break;
+			}
+
+			String command = line.trim();
+			int len = command.length();
+			if (len > 0) {
+				System.out.println("cmd=" + command);
+				workspace.send(command);
+			}
+
+		}
+
+		workspace.close();
+	}
+
 	private static void registerLogs() {
-	  BotLogger.setLevel(Level.ALL);
-    BotLogger.registerLogger(new ConsoleHandler());
-    try {
-        BotLogger.registerLogger(new BotsFileHandler());
-    } catch (IOException e) {
-        BotLogger.severe(LOGTAG, e);
-    }
-  }
+		BotLogger.setLevel(Level.ALL);
+		BotLogger.registerLogger(new ConsoleHandler());
+		try {
+			BotLogger.registerLogger(new BotsFileHandler());
+		} catch (IOException e) {
+			BotLogger.severe(LOGTAG, e);
+		}
+	}
 
 }
