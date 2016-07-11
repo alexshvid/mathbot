@@ -19,6 +19,20 @@ public final class MathConfig {
 
   public static final int MATH_CACHE_TIME = 86400;
 
-	public static final String LAST_WELCOME_LINE = "For information about changes from previous versions, type 'news'.";
+	public static final String[] LAST_WELCOME_LINE = { 
+		
+		"For information about changes from previous versions, type 'news'.",
+		"octave: disabling GUI features"
+		
+	};
 
+	public static boolean isLastWelcomeLine(String line) {
+		for (String s : LAST_WELCOME_LINE) {
+			if (s.equals(line)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

@@ -35,7 +35,7 @@ public final class ChatOutputStream extends LogOutputStream {
 			return;
 		}
 		
-		if (MathConfig.LAST_WELCOME_LINE.equals(line)) {
+		if (MathConfig.isLastWelcomeLine(line)) {
 			welcomeDone = true;
 			return;
 		}

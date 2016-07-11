@@ -134,7 +134,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 				continue;
 			}
 			
-			if (MathConfig.LAST_WELCOME_LINE.equals(line)) {
+			if (MathConfig.isLastWelcomeLine(line)) {
 				welcomeDone = true;
 				continue;
 			}
