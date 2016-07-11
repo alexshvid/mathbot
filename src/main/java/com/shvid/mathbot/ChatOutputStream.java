@@ -29,7 +29,7 @@ public final class ChatOutputStream extends LogOutputStream {
 	@Override
   protected void processLine(String line, int logLevel) {
 
-		//System.out.println("PROCESS LINE '" + line + "'");
+		System.out.println("PROCESS LINE '" + line + "'");
 
 		if (line == null || line.length() == 0) {
 			return;
