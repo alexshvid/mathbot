@@ -25,7 +25,8 @@ public final class MathConfig {
   	"cat",
   	"ls",
   	"load",
-  	"save"
+  	"save",
+  	"exit"
   };
   
 	public static final String[] LAST_WELCOME_LINE = { 

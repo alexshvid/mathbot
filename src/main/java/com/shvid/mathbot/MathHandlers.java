@@ -173,6 +173,15 @@ public class MathHandlers extends TelegramLongPollingBot {
 			return;
 		}
 		
+		if (query.startsWith("/help")) {
+			SendMessage replyMessage = new SendMessage();
+			replyMessage.setChatId(message.getChatId().toString());
+			replyMessage.enableMarkdown(true);
+			replyMessage.setText("Welcome to the GetMathBot.\nScalar, vector and matrix operations are supported.\nSintax and functions are similar to MatLab/Octave.\nEnjoy.");
+			sendMessage(replyMessage);
+			return;
+		}
+		
 		MathWorkspace workspace = mathService.findWorkspace(chatId);
 		if (workspace == null) {
 			workspace = createNewWorkspace(message);
