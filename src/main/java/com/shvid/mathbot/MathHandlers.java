@@ -11,6 +11,7 @@ import org.telegram.telegrambots.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.api.objects.inlinequery.InlineQuery;
 import org.telegram.telegrambots.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
 import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResult;
@@ -75,7 +76,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 
 	private void processInlineQuery(InlineQuery inlineQuery) {
 		String query = inlineQuery.getQuery();
-		System.out.println("INLINE_QUERY FROM @" + inlineQuery.getFrom().getUserName() + " TEXT '" + query + "'");
+		System.out.println("INLINE_QUERY FROM @" + getUsername(inlineQuery.getFrom()) + " TEXT '" + query + "'");
 		BotLogger.debug(LOGTAG, "InlineQuery: " + query);
 		try {
 			if (query != null && !query.isEmpty()) {
@@ -159,7 +160,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 			return;
 		}
 		
-		System.out.println("MESSAGE FROM @" + message.getFrom().getUserName() + " TEXT '" + query + "'");
+		System.out.println("MESSAGE FROM @" + getUsername(message.getFrom()) + " TEXT '" + query + "'");
 		
 		if (!queryService.isValidQuery(query)) {
 			return;
@@ -193,7 +194,9 @@ public class MathHandlers extends TelegramLongPollingBot {
 	
 	private MathWorkspace createNewWorkspace(Message message) throws TelegramApiException {
 		
-		MathWorkspace workspace = mathService.newWorkspace(this, message.getChatId(), message.getFrom().getUserName());
+		
+		
+		MathWorkspace workspace = mathService.newWorkspace(this, message.getChatId(), getUsername(message.getFrom()));
 		
 		SendMessage replyMessage = new SendMessage();
 		replyMessage.setChatId(message.getChatId().toString());
@@ -210,6 +213,32 @@ public class MathHandlers extends TelegramLongPollingBot {
 		BotLogger.debug(LOGTAG, "Query: " + query);
 
 		workspace.send(query);
+		
+	}
+	
+	private String getUsername(User user) {
+		
+		StringBuilder str = new StringBuilder();
+		
+		if (user.getUserName() != null) {
+			str.append("@").append(user.getUserName());
+		}
+		else {
+			if (user.getFirstName() != null) {
+				str.append(user.getFirstName());
+			}
+			if (user.getLastName() != null) {
+				if (str.length() > 0) {
+					str.append(" ");
+				}
+				str.append(user.getLastName());
+			}
+			if (str.length() == 0) {
+				str.append(user.getId());
+			}
+		}
+		
+		return str.toString();
 		
 	}
 	
