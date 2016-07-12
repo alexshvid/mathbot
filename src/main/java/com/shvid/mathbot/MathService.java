@@ -49,6 +49,14 @@ public class MathService {
 		return null;
 	}
 	
+	public void dropWorkspace(Long chatId) {
+		MathWorkspace workspace = workspaceMap.getIfPresent(chatId);
+		if (workspace != null) {
+			workspaceMap.invalidate(chatId);
+			workspace.close();		
+		}
+	}
+	
 	public MathWorkspace newWorkspace(AbsSender sender, Long chatId, String receiver) {
 		
 		ChatOutputStream outputStream = new ChatOutputStream(sender, chatId, receiver);

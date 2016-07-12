@@ -151,9 +151,14 @@ public class MathHandlers extends TelegramLongPollingBot {
 	private void processMessage(Message message) throws TelegramApiException {
 
 		System.out.println("MESSAGE FROM @" + message.getFrom().getUserName() + " TEXT '" + message.getText() + "'");
-
 		
 		Long chatId = message.getChatId();
+
+		if ("/start".equals(message.getText())) {
+			mathService.dropWorkspace(chatId);
+			createNewWorkspace(message);
+			return;
+		}
 		
 		MathWorkspace workspace = mathService.findWorkspace(chatId);
 		if (workspace == null) {
