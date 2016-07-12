@@ -19,6 +19,8 @@ public final class MathConfig {
 
   public static final int MATH_CACHE_TIME = 86400;
 
+	public static final String SYSTEM_CHARS = " ~!@#$%^&*()_+-=[]{}:;'\",.<>/?|\\";
+
   public static final String[] DENY_COMMANDS = {
   	"pwd",
   	"cd",
