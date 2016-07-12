@@ -15,9 +15,9 @@ public final class MathConfig {
 	
 	public static final String MATH_BOT_USER = "GetMathBot";
 
-	public static final String INLINE_TITLE = "GetMathBot Answer";
+	public static final String INLINE_TITLE = "GetMathBot ";
 
-  public static final int MATH_CACHE_TIME = 86400;
+  public static final int MATH_CACHE_TIME = 1;
 
 	public static final String SYSTEM_CHARS = " ~!@#$%^&*()_+-=[]{}:;'\",.<>/?|\\";
 
