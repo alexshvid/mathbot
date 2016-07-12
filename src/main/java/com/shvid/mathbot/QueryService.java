@@ -19,7 +19,7 @@ public class QueryService {
 
 		String lowcase = query.toLowerCase();
 		
-		StringTokenizer tokenizer = new StringTokenizer(lowcase, " ");
+		StringTokenizer tokenizer = new StringTokenizer(lowcase, " ()\"\'*");
 		
 		if (tokenizer.hasMoreTokens()) {
 			
