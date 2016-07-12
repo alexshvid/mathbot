@@ -83,10 +83,10 @@ public class MathWorkspace {
 	public void close() {
 		try {
 	    streamHandler.stop();
+			executor.getWatchdog().destroyProcess();
     } catch (IOException e) {
     	BotLogger.error(LOGTAG, e);
     }
-		executor.getWatchdog().destroyProcess();
 	}
 
 	public enum RemovalListenerImpl implements
