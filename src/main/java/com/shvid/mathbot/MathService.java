@@ -49,9 +49,9 @@ public class MathService {
 		return null;
 	}
 	
-	public MathWorkspace newWorkspace(AbsSender sender, Long chatId) {
+	public MathWorkspace newWorkspace(AbsSender sender, Long chatId, String receiver) {
 		
-		ChatOutputStream outputStream = new ChatOutputStream(sender, chatId);
+		ChatOutputStream outputStream = new ChatOutputStream(sender, chatId, receiver);
 		
 		MathWorkspace workspace = new MathWorkspace(appSettings.getOctaveExec(), outputStream);
 		workspaceMap.put(chatId, workspace);

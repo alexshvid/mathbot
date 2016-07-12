@@ -19,17 +19,19 @@ public final class ChatOutputStream extends LogOutputStream {
 	
 	private final AbsSender sender;
 	private final Long chatId;
+	private final String receiver;
 	private volatile boolean welcomeDone = false;
 	
-	public ChatOutputStream(AbsSender sender, Long chatId) {
+	public ChatOutputStream(AbsSender sender, Long chatId, String receiver) {
 		this.sender = sender;
 		this.chatId = chatId;
+		this.receiver = receiver;
 	}
 	
 	@Override
   protected void processLine(String line, int logLevel) {
 
-		System.out.println("PROCESS LINE '" + line + "'");
+		System.out.println("SEND TO @" + receiver +" TEXT '" + line + "'");
 
 		if (line == null || line.length() == 0) {
 			return;

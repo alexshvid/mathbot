@@ -74,6 +74,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 
 	private void processInlineQuery(InlineQuery inlineQuery) {
 		String query = inlineQuery.getQuery();
+		System.out.println("INLINE_QUERY FROM @" + inlineQuery.getFrom().getUserName() + " TEXT '" + query + "'");
 		BotLogger.debug(LOGTAG, "InlineQuery: " + query);
 		try {
 			if (query != null && !query.isEmpty()) {
@@ -149,6 +150,9 @@ public class MathHandlers extends TelegramLongPollingBot {
 	
 	private void processMessage(Message message) throws TelegramApiException {
 
+		System.out.println("MESSAGE FROM @" + message.getFrom().getUserName() + " TEXT '" + message.getText() + "'");
+
+		
 		Long chatId = message.getChatId();
 		
 		MathWorkspace workspace = mathService.findWorkspace(chatId);
@@ -162,7 +166,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 	
 	private MathWorkspace createNewWorkspace(Message message) throws TelegramApiException {
 		
-		MathWorkspace workspace = mathService.newWorkspace(this, message.getChatId());
+		MathWorkspace workspace = mathService.newWorkspace(this, message.getChatId(), message.getNewChatMember().getUserName());
 		
 		SendMessage replyMessage = new SendMessage();
 		replyMessage.setChatId(message.getChatId().toString());
