@@ -31,7 +31,7 @@ public final class ChatOutputStream extends LogOutputStream {
 	@Override
   protected void processLine(String line, int logLevel) {
 
-		System.out.println("SEND TO @" + receiver +" TEXT '" + line + "'");
+		System.out.println("SEND TO " + receiver +" TEXT '" + line + "'");
 
 		if (line == null || line.length() == 0) {
 			return;

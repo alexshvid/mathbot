@@ -76,7 +76,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 
 	private void processInlineQuery(InlineQuery inlineQuery) {
 		String query = inlineQuery.getQuery();
-		System.out.println("INLINE_QUERY FROM @" + getUsername(inlineQuery.getFrom()) + " TEXT '" + query + "'");
+		System.out.println("INLINE_QUERY FROM " + getUsername(inlineQuery.getFrom()) + " TEXT '" + query + "'");
 		BotLogger.debug(LOGTAG, "InlineQuery: " + query);
 		try {
 			if (query != null && !query.isEmpty()) {
@@ -160,7 +160,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 			return;
 		}
 		
-		System.out.println("MESSAGE FROM @" + getUsername(message.getFrom()) + " TEXT '" + query + "'");
+		System.out.println("MESSAGE FROM " + getUsername(message.getFrom()) + " TEXT '" + query + "'");
 		
 		if (!queryService.isValidQuery(query)) {
 			return;
