@@ -82,8 +82,8 @@ public class MathWorkspace {
 	
 	public void close() {
 		try {
-	    streamHandler.stop();
 			executor.getWatchdog().destroyProcess();
+	    streamHandler.stop();
     } catch (IOException e) {
     	BotLogger.error(LOGTAG, e);
     }
