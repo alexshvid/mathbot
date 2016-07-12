@@ -32,6 +32,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 	private final AppSettings appSettings;
 	private final String botToken;
 	private final MathService mathService;
+	private final QueryService queryService = new QueryService();
 
 	public MathHandlers(AppSettings appSettings) {
 		this.appSettings = appSettings;
@@ -88,6 +89,9 @@ public class MathHandlers extends TelegramLongPollingBot {
 	private void runInlineQuery(InlineQuery inlineQuery) throws Exception {
 
 		String query = inlineQuery.getQuery();
+		if (!queryService.isValidQuery(query)) {
+			return;
+		}
 		
 		InlineWorkspace workspace = new InlineWorkspace(appSettings.getOctaveExec(), query + "\nexit\n");
 
@@ -156,6 +160,10 @@ public class MathHandlers extends TelegramLongPollingBot {
 		}
 		
 		System.out.println("MESSAGE FROM @" + message.getFrom().getUserName() + " TEXT '" + query + "'");
+		
+		if (!queryService.isValidQuery(query)) {
+			return;
+		}
 		
 		Long chatId = message.getChatId();
 		

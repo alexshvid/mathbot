@@ -19,6 +19,15 @@ public final class MathConfig {
 
   public static final int MATH_CACHE_TIME = 86400;
 
+  public static final String[] DENY_COMMANDS = {
+  	"pwd",
+  	"cd",
+  	"cat",
+  	"ls",
+  	"load",
+  	"save"
+  };
+  
 	public static final String[] LAST_WELCOME_LINE = { 
 		
 		"For information about changes from previous versions, type 'news'.",
