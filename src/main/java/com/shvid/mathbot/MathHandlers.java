@@ -163,6 +163,7 @@ public class MathHandlers extends TelegramLongPollingBot {
 		System.out.println("MESSAGE FROM " + getUsername(message.getFrom()) + " TEXT '" + query + "'");
 		
 		if (!queryService.isValidQuery(query)) {
+			replyInvalidQuery(message);
 			return;
 		}
 		
@@ -191,10 +192,16 @@ public class MathHandlers extends TelegramLongPollingBot {
 		runInWorkspace(workspace, message);
 
 	}
+
+	private void replyInvalidQuery(Message message) throws TelegramApiException {
+	  SendMessage replyMessage = new SendMessage();
+	  replyMessage.setChatId(message.getChatId().toString());
+	  replyMessage.enableMarkdown(true);
+	  replyMessage.setText("error: invalid query");
+	  sendMessage(replyMessage);
+  }
 	
 	private MathWorkspace createNewWorkspace(Message message) throws TelegramApiException {
-		
-		
 		
 		MathWorkspace workspace = mathService.newWorkspace(this, message.getChatId(), getUsername(message.getFrom()));
 		

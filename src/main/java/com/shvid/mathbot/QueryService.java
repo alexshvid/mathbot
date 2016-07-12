@@ -19,11 +19,12 @@ public class QueryService {
 
 		String lowcase = query.toLowerCase();
 		
-		StringTokenizer tokenizer = new StringTokenizer(lowcase, " ()\"\'*");
+		StringTokenizer tokenizer = new StringTokenizer(lowcase, " ()\"\'*/");
 		
-		if (tokenizer.hasMoreTokens()) {
+		while (tokenizer.hasMoreTokens()) {
 			
 			String token = tokenizer.nextToken();
+			System.out.println("token = " + token);
 			
 			if (denyCommands.contains(token)) {
 				return false;
