@@ -11,3 +11,5 @@ Read http://www.octave.org/bugs.html to learn how to submit bug reports.
 For information about changes from previous versions, type 'news'.
 octave: X11 DISPLAY environment variable not set
 octave: disabling GUI features
+attempting to save variables to 'octave-workspace'...
+save to 'octave-workspace' complete
