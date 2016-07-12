@@ -223,19 +223,21 @@ public class MathHandlers extends TelegramLongPollingBot {
 		if (user.getUserName() != null) {
 			str.append("@").append(user.getUserName());
 		}
-		else {
+		else if (user.getFirstName() != null || user.getLastName() != null) {
+			str.append("'");
 			if (user.getFirstName() != null) {
 				str.append(user.getFirstName());
 			}
 			if (user.getLastName() != null) {
-				if (str.length() > 0) {
+				if (user.getFirstName() != null) {
 					str.append(" ");
 				}
 				str.append(user.getLastName());
 			}
-			if (str.length() == 0) {
-				str.append(user.getId());
-			}
+			str.append("'");
+		}
+		else {
+			str.append(user.getId());
 		}
 		
 		return str.toString();
