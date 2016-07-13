@@ -24,7 +24,6 @@ public class QueryService {
 		while (tokenizer.hasMoreTokens()) {
 			
 			String token = tokenizer.nextToken();
-			System.out.println("token = " + token);
 			
 			if (denyCommands.contains(token)) {
 				return false;
