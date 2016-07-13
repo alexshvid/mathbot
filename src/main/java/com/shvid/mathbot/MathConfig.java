@@ -33,7 +33,9 @@ public final class MathConfig {
   	"load",
   	"save",
   	"exit",
-  	"system"
+  	"system",
+  	"for",
+  	"while"
   };
   
 	public static final String[] LAST_WELCOME_LINE = { 
