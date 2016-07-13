@@ -21,6 +21,8 @@ public final class ChatOutputStream extends LogOutputStream {
 	private final Long chatId;
 	private final String receiver;
 	private volatile boolean welcomeDone = false;
+	private volatile int linesCounter = 0;
+	private volatile long sendingIntervalNumber = 0;
 	
 	public ChatOutputStream(AbsSender sender, Long chatId, String receiver) {
 		this.sender = sender;
@@ -41,9 +43,27 @@ public final class ChatOutputStream extends LogOutputStream {
 			welcomeDone = true;
 			return;
 		}
-		
+
 		if (welcomeDone) {
-		
+			
+			long interval = System.currentTimeMillis() / MathConfig.SEND_SPEED_MLS;
+
+			if (interval > sendingIntervalNumber) {
+				sendingIntervalNumber = interval;
+				linesCounter = 0;
+				
+			}
+			else {
+				if (linesCounter == MathConfig.SEND_SPEED_MAX_LINES) {
+					line = "And more lines...";						
+				}
+				else if (linesCounter > MathConfig.SEND_SPEED_MAX_LINES) {
+					return;
+				}
+			}
+
+			linesCounter++;
+
 			SendMessage sendMessage = new SendMessage();
 			sendMessage.setChatId(chatId.toString());
 			sendMessage.enableMarkdown(true);
@@ -53,8 +73,9 @@ public final class ChatOutputStream extends LogOutputStream {
 	    } catch (TelegramApiException e) {
 				BotLogger.error(LOGTAG, e);
 	    }
-		
+			
 		}
   }
 
+	
 }

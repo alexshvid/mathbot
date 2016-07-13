@@ -107,22 +107,24 @@ public class MathHandlers extends TelegramLongPollingBot {
 			return;
 		}
 		
-		StringBuilder answer = new StringBuilder();
-		answer.append(query);
+		StringBuilder answerBuilder = new StringBuilder();
+		answerBuilder.append(query);
 		
 		if (result.startsWith("ans")) {
-			answer.append(result.substring(3));
+			answerBuilder.append(result.substring(3));
 		}
 		else if (result.indexOf("=") == -1) {
-			answer.append(" =").append(result);
+			answerBuilder.append(" =").append(result);
 		}
 		else {
-			answer.append(result);
+			answerBuilder.append(result);
 		}
 
-		if (answer.length() > 100) {
+		if (answerBuilder.length() > 100) {
 			return;
 		}
+		
+		String answer = answerBuilder.toString();
 		
     AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
     answerInlineQuery.setInlineQueryId(inlineQuery.getId());
@@ -131,11 +133,11 @@ public class MathHandlers extends TelegramLongPollingBot {
     InputTextMessageContent messageContent = new InputTextMessageContent();
     messageContent.disableWebPagePreview();
     messageContent.enableMarkdown(true);
-    messageContent.setMessageText(answer.toString());
+    messageContent.setMessageText(answer);
     
     InlineQueryResultArticle article = new InlineQueryResultArticle();
     article.setId(inlineQuery.getId());
-    article.setTitle(MathConfig.INLINE_TITLE + answer);
+    article.setTitle(answer);
     article.setInputMessageContent(messageContent);
     
     List<InlineQueryResult> articles = new ArrayList<>(1);

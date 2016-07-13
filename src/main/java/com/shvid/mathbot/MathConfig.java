@@ -21,6 +21,10 @@ public final class MathConfig {
 
 	public static final String SYSTEM_CHARS = " ~!@#$%^&*()_+-=[]{}:;'\",.<>/?|\\";
 
+	public static final int SEND_SPEED_MAX_LINES = 15;
+	
+	public static final long SEND_SPEED_MLS = 1000L;
+	
   public static final String[] DENY_COMMANDS = {
   	"pwd",
   	"cd",
