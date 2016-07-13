@@ -46,7 +46,8 @@ public final class ChatOutputStream extends LogOutputStream {
 
 		if (welcomeDone) {
 			
-			long interval = System.currentTimeMillis() / MathConfig.SEND_SPEED_MLS;
+			long current = System.currentTimeMillis();
+			long interval = current - (current % MathConfig.SEND_SPEED_MLS);
 
 			if (interval > sendingIntervalNumber) {
 				sendingIntervalNumber = interval;
