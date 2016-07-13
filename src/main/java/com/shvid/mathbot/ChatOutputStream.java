@@ -1,5 +1,9 @@
 package com.shvid.mathbot;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.commons.exec.LogOutputStream;
 import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -20,9 +24,9 @@ public final class ChatOutputStream extends LogOutputStream {
 	private final AbsSender sender;
 	private final Long chatId;
 	private final String receiver;
-	private volatile boolean welcomeDone = false;
-	private volatile int linesCounter = 0;
-	private volatile long sendingIntervalNumber = 0;
+	private final AtomicBoolean welcomeDone = new AtomicBoolean(false);
+	private final AtomicInteger intervalLines = new AtomicInteger(0);
+	private final AtomicLong sendingIntervalMls = new AtomicLong(0L);
 	
 	public ChatOutputStream(AbsSender sender, Long chatId, String receiver) {
 		this.sender = sender;
@@ -40,30 +44,30 @@ public final class ChatOutputStream extends LogOutputStream {
 		}
 		
 		if (MathConfig.isLastWelcomeLine(line)) {
-			welcomeDone = true;
+			welcomeDone.set(true);
 			return;
 		}
 
-		if (welcomeDone) {
+		if (welcomeDone.get()) {
 			
 			long current = System.currentTimeMillis();
 			long interval = current - (current % MathConfig.SEND_SPEED_MLS);
 
-			if (interval > sendingIntervalNumber) {
-				sendingIntervalNumber = interval;
-				linesCounter = 0;
-				
+			if (interval > sendingIntervalMls.get()) {
+				sendingIntervalMls.set(interval);
+				intervalLines.set(0);
 			}
 			else {
-				if (linesCounter == MathConfig.SEND_SPEED_MAX_LINES) {
+				int lines = intervalLines.get();
+				if (lines == MathConfig.SEND_SPEED_MAX_LINES) {
 					line = "And more lines...";						
 				}
-				else if (linesCounter > MathConfig.SEND_SPEED_MAX_LINES) {
+				else if (lines > MathConfig.SEND_SPEED_MAX_LINES) {
 					return;
 				}
 			}
 
-			linesCounter++;
+			intervalLines.incrementAndGet();
 
 			SendMessage sendMessage = new SendMessage();
 			sendMessage.setChatId(chatId.toString());
