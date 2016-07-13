@@ -67,7 +67,9 @@ public final class ChatOutputStream extends LogOutputStream {
 				}
 			}
 
-			intervalLines.incrementAndGet();
+			int lines = intervalLines.incrementAndGet();
+			
+			System.out.println("SEND LINES " + lines + " in " + sendingIntervalMls.get());
 
 			SendMessage sendMessage = new SendMessage();
 			sendMessage.setChatId(chatId.toString());
