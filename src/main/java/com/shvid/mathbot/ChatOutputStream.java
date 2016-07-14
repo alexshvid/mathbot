@@ -68,7 +68,7 @@ public final class ChatOutputStream extends LogOutputStream {
 
 			intervalLines.incrementAndGet();
 
-		  line = StringUtils.replaceChars(line, '*', '?');
+		  line = StringUtils.replaceChars(line, '*', 'x');
 
 			System.out.println("SEND TO " + receiver +" TEXT '" + line + "'");
 
