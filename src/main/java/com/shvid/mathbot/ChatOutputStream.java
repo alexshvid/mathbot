@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.bots.AbsSender;
@@ -66,7 +67,9 @@ public final class ChatOutputStream extends LogOutputStream {
 			}
 
 			intervalLines.incrementAndGet();
-			
+
+		  line = StringUtils.replaceChars(line, '*', '?');
+
 			System.out.println("SEND TO " + receiver +" TEXT '" + line + "'");
 
 			SendMessage sendMessage = new SendMessage();
